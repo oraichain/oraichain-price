@@ -4,7 +4,7 @@ import Long from 'long';
 import bech32 from 'bech32';
 import fs from 'fs';
 import util from 'util';
-const log_file = fs.createWriteStream(__dirname + '/debug.log', { flags: 'w' });
+const log_file = fs.createWriteStream(__dirname + '/debug.log', { flags: 'a+' });
 const log_stdout = process.stdout;
 
 const config = {};
@@ -36,7 +36,7 @@ export const setAiRequest = async (oscriptName, count) => {
     });
 
     const msgSendAny = new message.google.protobuf.Any({
-        type_url: '/oraichain.orai.airequest.MsgSetAIRequest',
+        type_url: '/oraichain.orai.airequest.MsgSetAIReques',
         value: message.oraichain.orai.airequest.MsgSetAIRequest.encode(msgSend).finish()
     });
 
