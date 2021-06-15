@@ -18,7 +18,6 @@
     "@oraichain/cosmosjs": "0.0.54",
     "abort-controller": "^3.0.0",
     "babel-loader": "^8.1.0",
-    "bech32": "1.1.3",
     "dotenv": "^8.2.0",
     "ksuid": "^2.0.0"
   }
