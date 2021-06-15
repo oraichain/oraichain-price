@@ -4,7 +4,6 @@ import Long from 'long';
 import fs from 'fs';
 import util from 'util';
 const log_file = fs.createWriteStream(__dirname + '/debug.log', { flags: 'a+' });
-const log_stdout = process.stdout;
 
 const config = {};
 if (process.env.NODE_ENV !== 'production') {
@@ -50,7 +49,7 @@ export const setAiRequest = async (oscriptName, count) => {
         if (response.tx_response.code !== 0) throw Error(response.tx_response.raw_log);
         console.log('request id: ', req_id);
     } catch (ex) {
-        log_file.write(`timestamp: ${new Date()} with ${util.format(ex)}` + '\n');
-        log_stdout.write(`timestamp: ${new Date()} with ${util.format(ex)}` + '\n');
+        console.error(ex);
+        log_file.write(`timestamp: ${new Date()} with ${util.format(ex)}` + '\n\n\n');
     }
 }

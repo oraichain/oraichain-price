@@ -9,7 +9,7 @@ const runPriceFeed = async () => {
     console.log("error: ", error)
 
   }
-  setTimeout(runPriceFeed, 120000);
+  setTimeout(runPriceFeed, parseInt(process.env.INTERVAL) || 120000);
 }
 
 const start = async () => {
