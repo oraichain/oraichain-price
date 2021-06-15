@@ -36,7 +36,7 @@ export const setAiRequest = async (oscriptName, count) => {
     });
 
     const msgSendAny = new message.google.protobuf.Any({
-        type_url: '/oraichain.orai.airequest.MsgSetAIReques',
+        type_url: '/oraichain.orai.airequest.MsgSetAIRequest',
         value: message.oraichain.orai.airequest.MsgSetAIRequest.encode(msgSend).finish()
     });
 
