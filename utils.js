@@ -45,7 +45,6 @@ export const setAiRequest = async (oscriptName, count) => {
     });
 
     try {
-        console.log(childKey);
         const response = await cosmos.submit(childKey, txBody, 'BROADCAST_MODE_BLOCK', 0, 300000);
         console.log(response);
         if (response.tx_response.code !== 0) throw Error(response.tx_response.raw_log);
