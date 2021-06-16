@@ -28,7 +28,7 @@ export const setAiRequest = async (oscriptName, count) => {
         oracle_script_name: oscriptName,
         creator,
         validator_count: new Long(count),
-        fees: fees ? fees : '0orai',
+        fees,
         input: Buffer.from(input),
         expected_output: Buffer.from(expectedOutput)
     });
