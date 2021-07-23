@@ -15,7 +15,7 @@
     "@babel/core": "^7.9.0",
     "@babel/node": "^7.10.5",
     "@babel/preset-env": "^7.9.0",
-    "@oraichain/cosmosjs": "0.0.54",
+    "@oraichain/cosmosjs": "0.0.70",
     "abort-controller": "^3.0.0",
     "babel-loader": "^8.1.0",
     "dotenv": "^8.2.0",

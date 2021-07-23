@@ -1,10 +1,10 @@
 import { setAiRequest } from './utils';
 
 const runPriceFeed = async () => {
-  const oracleScriptName = process.env.ORACLE_SCRIPT || "oscript_price_special";
-  const count = parseInt(process.env.COUNT) || 1;
+  const aiOracleAddr = process.env.AIORACLE_ADDR || "oscript_price_special";
+  const validatorList = parseInt(process.env.VALIDATOR_LIST) || ["orai14vcw5qk0tdvknpa38wz46js5g7vrvut8lk0lk6"];
   try {
-    await setAiRequest(oracleScriptName, count);
+    await setAiRequest(aiOracleAddr, validatorList);
   } catch (error) {
     console.log("error: ", error)
 

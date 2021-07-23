@@ -1,8 +1,5 @@
 import Cosmos from '@oraichain/cosmosjs';
-import KSUID from 'ksuid';
-import Long from 'long';
 import fs from 'fs';
-import util from 'util';
 const log_file = fs.createWriteStream(__dirname + '/debug.log', {
   flags: 'a+'
 });
@@ -17,56 +14,43 @@ const message = Cosmos.message;
 const cosmos = new Cosmos(process.env.LCD_URL, process.env.CHAIN_ID);
 cosmos.setBech32MainPrefix('orai');
 const childKey = cosmos.getChildKey(process.env.MNEMONIC);
-const creator = childKey.identifier;
-console.log(cosmos.getAddress(childKey));
+const creator = cosmos.getAddress(childKey);
 
-export const setAiRequest = async (oscriptName, count) => {
-  const req_id = KSUID.randomSync().string;
-  // get accAddress in binary
-  const fees = process.env.FEES || '1orai';
-  const input = '';
-  const expectedOutput = '';
-  const msgSend = new message.oraichain.orai.airequest.MsgSetAIRequest({
-    request_id: req_id,
-    oracle_script_name: oscriptName,
-    creator,
-    validator_count: new Long(count),
-    fees,
-    input: Buffer.from(input),
-    expected_output: Buffer.from(expectedOutput)
+export const setAiRequest = async (oracleAddr, validatorList) => {
+  const input = JSON.stringify({
+    oracle_handle: {
+      msg: {
+        create_ai_request: {
+          validators: validatorList,
+          input: "",
+        }
+      }
+    }
+  })
+  const txBody = getHandleMessage(oracleAddr, Buffer.from(input), creator, process.env.FEES);
+  try {
+    const res = await cosmos.submit(childKey, txBody, 'BROADCAST_MODE_BLOCK', isNaN(process.env.TX_FEES) ? 0 : parseInt(process.env.TX_FEES), 5000000);
+    console.log(res);
+  } catch (error) {
+    console.log('error: ', error);
+  }
+};
+
+const getHandleMessage = (contract, msg, sender, amount) => {
+  const sent_funds = amount ? [{ denom: cosmos.bech32MainPrefix, amount }] : null;
+  const msgSend = new message.cosmwasm.wasm.v1beta1.MsgExecuteContract({
+    contract,
+    msg,
+    sender,
+    sent_funds
   });
 
   const msgSendAny = new message.google.protobuf.Any({
-    type_url: '/oraichain.orai.airequest.MsgSetAIRequest',
-    value:
-      message.oraichain.orai.airequest.MsgSetAIRequest.encode(msgSend).finish()
+    type_url: '/cosmwasm.wasm.v1beta1.MsgExecuteContract',
+    value: message.cosmwasm.wasm.v1beta1.MsgExecuteContract.encode(msgSend).finish()
   });
 
-  const txBody = new message.cosmos.tx.v1beta1.TxBody({
-    messages: [msgSendAny],
-    memo: ''
+  return new message.cosmos.tx.v1beta1.TxBody({
+    messages: [msgSendAny]
   });
-
-  try {
-    const response = await cosmos.submit(
-      childKey,
-      txBody,
-      'BROADCAST_MODE_BLOCK',
-      0,
-      300000
-    );
-    console.log(response);
-    if (!response.tx_response || response.tx_response.code !== 0)
-      throw Error(
-        response.tx_response
-          ? response.tx_response.raw_log
-          : 'tx_response is undefined'
-      );
-    console.log('request id: ', req_id);
-  } catch (ex) {
-    console.error(ex);
-    log_file.write(
-      `timestamp: ${new Date()} with ${util.format(ex)}` + '\n\n\n'
-    );
-  }
 };
