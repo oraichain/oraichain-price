@@ -21,13 +21,24 @@ const init = async () => {
   return validatorList;
 }
 
-const randomValidators = (validatorList) => {
-  return ["orai14vcw5qk0tdvknpa38wz46js5g7vrvut8lk0lk6"]
+const randomValidators = (validatorList, n) => {
+  let result = new Array(n),
+    len = validatorList.length,
+    taken = new Array(len);
+  if (n > len)
+    throw new RangeError("getRandom: more elements taken than available");
+  while (n--) {
+    const x = Math.floor(Math.random() * len);
+    result[n] = validatorList[x in taken ? taken[x] : x];
+    taken[x] = --len in taken ? taken[len] : len;
+  }
+  return result;
 }
 
 const runPriceFeed = async () => {
   const validators = await init();
-  const validatorList = randomValidators(validators);
+  const validatorList = randomValidators(validators, process.env.COUNT ? parseInt(process.env.COUNT) : 5);
+  console.log(validatorList);
   const aiOracleAddr = process.env.AIORACLE_ADDR || "oscript_price_special";
   try {
     await setAiRequest(aiOracleAddr, validatorList);
