@@ -4,19 +4,19 @@ const log_file = fs.createWriteStream(__dirname + '/debug.log', {
   flags: 'a+'
 });
 
+declare var cosmos: Cosmos;
+
 const config = {};
 if (process.env.NODE_ENV && process.env.NODE_ENV !== 'production') {
   config.path = `.env.${process.env.NODE_ENV}`;
 }
+const message = Cosmos.message;
+
 require('dotenv').config(config);
 
-const message = Cosmos.message;
-const cosmos = new Cosmos(process.env.LCD_URL, process.env.CHAIN_ID);
-cosmos.setBech32MainPrefix('orai');
-const childKey = cosmos.getChildKey(process.env.MNEMONIC);
-const creator = cosmos.getAddress(childKey);
-
 export const setAiRequest = async (oracleAddr, validatorList) => {
+  const childKey = cosmos.getChildKey(process.env.MNEMONIC);
+  const creator = cosmos.getAddress(childKey);
   const input = JSON.stringify({
     oracle_handle: {
       msg: {
