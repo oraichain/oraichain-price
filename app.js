@@ -17,8 +17,11 @@ const init = async () => {
   };
 
   const validators = await httpGet('https://lcd.orai.io/cosmos/staking/v1beta1/validators');
-  const validatorList = JSON.parse(validators).validators.map(val => cosmos.getAddressStr(val.operator_address));
-  return validatorList;
+  let validatorsActive = [];
+  for (let val of JSON.parse(validators).validators) {
+    if (!val.jailed && val.status === "BOND_STATUS_BONDED") validatorsActive.push(cosmos.getAddressStr(val.operator_address))
+  }
+  return validatorsActive;
 }
 
 const randomValidators = (validatorList, n) => {
