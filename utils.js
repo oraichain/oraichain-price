@@ -22,7 +22,7 @@ export const setAiRequest = async (oracleAddr, validatorList) => {
       msg: {
         create_ai_request: {
           validators: validatorList,
-          input: "",
+          input: process.env.INPUT ? process.env.INPUT : "",
         }
       }
     }
