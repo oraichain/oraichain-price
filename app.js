@@ -36,6 +36,7 @@ const randomValidators = (validatorList, n) => {
     taken[x] = --len in taken ? taken[len] : len;
   }
   return result;
+  // return ['orai14vcw5qk0tdvknpa38wz46js5g7vrvut8lk0lk6'];
 }
 
 const runPriceFeed = async () => {
@@ -43,17 +44,16 @@ const runPriceFeed = async () => {
   const validatorList = randomValidators(validators, process.env.COUNT ? parseInt(process.env.COUNT) : 5);
   console.log(validatorList);
   const aiOracleAddr = process.env.AIORACLE_ADDR || "oscript_price_special";
-  try {
-    await setAiRequest(aiOracleAddr, validatorList);
-  } catch (error) {
-    console.log("error: ", error)
-
-  }
-  setTimeout(runPriceFeed, parseInt(process.env.INTERVAL) || 120000);
+  await setAiRequest(aiOracleAddr, validatorList);
 }
 
 const start = async () => {
-  runPriceFeed();
+  try {
+    runPriceFeed();
+  } catch (error) {
+    setTimeout(start, parseInt(process.env.INTERVAL) || 120000);
+  }
+  setTimeout(start, parseInt(process.env.INTERVAL) || 120000);
 };
 
 start();
