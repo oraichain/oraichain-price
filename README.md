@@ -1,6 +1,6 @@
 ## AI Oracle background
 
-* The AI Oracle protocol developed by Oraichain allows users to run AI services such as AI pricefeed, face recognition, or OCR in a decentralized manner.
+* The AI Oracle protocol developed by Oraichain allows users to run AI services such as AI price feed, face recognition, or OCR in a decentralized manner.
 
 * Each service contains several data source scripts, which fetch external AI APIs to get the result.
 
@@ -10,7 +10,7 @@
 
 * Users can select any aggregated result provided by any validator for their services.
 
-## AI pricefeed integration process
+## AI price feed integration process
 
 * To continuously and automatically request and collect tokens' prices using Oraichain, it is recommended to use Cosmosjs powered by Oraichain to easily interact with the network.
 
@@ -34,23 +34,23 @@ QUERY_COUNT=20
 
 where:
 
-* ```MNEMONIC``` is your Oraichain mnemonic used to create AI pricefeed requests. Without this field, you will not be able to create an AI pricefeed request.
+* ```MNEMONIC``` is your Oraichain mnemonic used to create AI price feed requests. Without this field, you will not be able to create an AI price feed request.
 
 * ```LCD_URL``` is the Oraichain network's team endpoint used to query network data or broadcast transactions.
 
 * ```CHAIN_ID``` is Oraichain chain id.
 
-* ```REQUEST_FEES``` is the fees (in uorai) you need to pay per AI pricefeed request. Such fees will go directly toward the validators' and providers' wallets. At the moment, the validators charge no fees when creating an AI pricefeed request, so it is not necessary to specify the value of this key. Example when adding a value: ```REQUEST_FEES=10```, where 10 is 10uorai = 10 * 10^-6 ORAI.
+* ```REQUEST_FEES``` is the fees (in uorai) you need to pay per AI price feed request. Such fees will go directly toward the validators' and providers' wallets. At the moment, the validators charge no fees when creating an AI price feed request, so it is not necessary to specify the value of this key. Example when adding a value: ```REQUEST_FEES=10```, where 10 is 10uorai = 10 * 10^-6 ORAI.
 
 * ```TX_FEES``` is the transaction fees (in uorai) of your requests. At the moment, all mainnet transactions cost no fees, 
 
-* ```AIORACLE_ADDR``` is the AI pricefeed Oracle smart contract address.
+* ```AIORACLE_ADDR``` is the AI price feed Oracle smart contract address.
 
-* ```INTERVAL``` is the interval (in ms) for creating new AI pricefeed requests. Reducing this value will create more AI pricefeed requests within a period of time
+* ```INTERVAL``` is the interval (in ms) for creating new AI price feed requests. Reducing this value will create more AI price feed requests within a period of time
 
-* ```QUERY_SLEEP_INTERVAL``` is the sleep interval (in ms) when waiting for the results of an AI pricefeed request. Decreasing this value will reduce the time waiting for the results to come.
+* ```QUERY_SLEEP_INTERVAL``` is the sleep interval (in ms) when waiting for the results of an AI price feed request. Decreasing this value will reduce the time waiting for the results to come.
 
-* ```QUERY_COUNT``` is the number of times you query the results of an AI pricefeed request. Decreasing this value will also reduce the time waiting for the pricefeed's results.
+* ```QUERY_COUNT``` is the number of times you query the results of an AI price feed request. Decreasing this value will also reduce the time waiting for the price feed's results.
 
 * ```COUNT``` is the validator count. The higher the value, the larger the number of validators needed to execute your request.
 
@@ -58,11 +58,27 @@ Using these pairs, you'll be able to manage your request time as well as the tok
 
 ### 2. Create a new AI request and collect its request ID
 
-Creating a new AI pricefeed request requires a certain number of validators involving in the process. At the moment, you can choose which validator to execute your request:
+Creating a new AI price feed request requires a certain number of validators involving in the process. At the moment, you can choose which validator to execute your request:
 
 ```js
 const validators = await init();
 const validatorList = randomValidators(validators, process.env.COUNT ? parseInt(process.env.COUNT) : 2);
+```
+
+where the ```init()``` function will initialize the cosmosjs object required to broadcast transactions and fetch the current list of Oraichain validators.
+
+```js
+const init = async () => {
+  global.cosmos = new Cosmos(process.env.LCD_URL, process.env.CHAIN_ID);
+  cosmos.setBech32MainPrefix('orai');
+
+  const validators = await cosmos.get(`/cosmos/staking/v1beta1/validators`);
+  let validatorsActive = [];
+  for (let val of validators.validators) {
+    if (!val.jailed && val.status === "BOND_STATUS_BONDED") validatorsActive.push(cosmos.getAddressStr(val.operator_address))
+  }
+  return validatorsActive;
+}
 ```
 
 next, create a new AI request:
@@ -71,6 +87,8 @@ next, create a new AI request:
 const aiOracleAddr = process.env.AIORACLE_ADDR;
 await setAiRequest(aiOracleAddr, validatorList);
 ```
+
+The function will create the price feed message and use your mnemonic to sign the AI price feed request transaction
 
 After creating a new AI request, collect its request ID:
 
@@ -102,3 +120,5 @@ when the status of the request is true, it means that the request has finally co
 ## Demo
 
 Type: ```NODE_ENV=production yarn start``` to start running the script. The request's results will be written into the ```output.log``` file, while all errors are put in the ```debug.log``` file.
+
+With this provided template nodejs script, you can extend and add more functionalities for your features such as a server with a database storing all the price feed results.
