@@ -49,7 +49,7 @@ exports.setAiRequest = async (oracleAddr, validatorList) => {
 };
 
 const getHandleMessage = (contract, msg, sender, amount) => {
-  const sent_funds = amount ? [{ denom: cosmos.bech32MainPrefix, amount }] : null;
+  const sent_funds = amount ? [{ denom: cosmos.bech32MainPrefix, amount: amount.toString() }] : null;
   const msgSend = new message.cosmwasm.wasm.v1beta1.MsgExecuteContract({
     contract,
     msg,
