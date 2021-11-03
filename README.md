@@ -6,7 +6,7 @@
 
 * The Oraichain's validators execute the AI requests, aggregate, and return the results, which are already verified by test cases.
 
-* Third party test case providers are responsible for the verification process, and are rewarded accordingly.
+* Third-party test case providers are responsible for the verification process and are rewarded accordingly.
 
 * Users can select any aggregated result provided by any validator for their services.
 
@@ -14,7 +14,7 @@
 
 * To continuously and automatically request and collect tokens' prices using Oraichain, it is recommended to use Cosmosjs powered by Oraichain to easily interact with the network.
 
-* There are three steps to finally retrieve the the tokens' prices:
+* There are three steps to finally retrieve the tokens' prices:
 
 ### 1. Prepare the .env file
 
@@ -46,7 +46,7 @@ where:
 
 * ```AIORACLE_ADDR``` is the AI price feed Oracle smart contract address.
 
-* ```INTERVAL``` is the interval (in ms) for creating new AI price feed requests. Reducing this value will create more AI price feed requests within a period of time
+* ```INTERVAL``` is the interval (in ms) for creating new AI price feed requests. Reducing this value will create more AI price feed requests within a period
 
 * ```QUERY_SLEEP_INTERVAL``` is the sleep interval (in ms) when waiting for the results of an AI price feed request. Decreasing this value will reduce the time waiting for the results to come.
 
