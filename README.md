@@ -102,6 +102,12 @@ let requestId = res.tx_response.logs[0].events[1].attributes[2].value;
 ### 3. Query the request's result using the corresponding request ID
 
 ```js
+await queryRequestResult(parseInt(requestId), 0);
+```
+
+The function will run in interval trying to fetch the results of the provided request id. It will throw an error after sufficient retries. Behind the scene, it creates a query message and invokes a GET request to the Oraichain network.
+
+```js
 let queryMsg = JSON.stringify({
     oracle_query: {
       msg: {
@@ -116,6 +122,24 @@ let { data } = await cosmos.get(`/wasm/v1beta1/contract/${process.env.AIORACLE_A
 ```
 
 when the status of the request is true, it means that the request has finally collected all results from the list of validators. The results are also ready to be extracted and used for your services.
+
+```js
+if (data.status) {
+  console.log("result reports: ", data.reports);
+  let aggregatedResult = "";
+  // collect the first report
+  for (let report of data.reports) {
+    if (report.status) {
+      aggregatedResult = Buffer.from(report.aggregated_result, 'base64').toString('ascii');
+      break;
+    }
+  }
+  // if all reports have false status => something wrong, must throw error
+  if (aggregatedResult === "") throw "Cannot collect any valid aggregated result from the validators";
+  requestOutput.write(`timestamp: ${new Date()}\nPricefeed aggregated result of request id ${requestId}: ${util.format(aggregatedResult)}\n\n`);
+  return;
+}
+```
 
 ## Demo
 
