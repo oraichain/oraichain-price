@@ -18,7 +18,8 @@
     "abort-controller": "^3.0.0",
     "babel-loader": "^8.1.0",
     "dotenv": "^8.2.0",
-    "ksuid": "^2.0.0"
+    "ksuid": "^2.0.0",
+    "util": "^0.12.4"
   },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.14.5",

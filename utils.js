@@ -1,8 +1,10 @@
 import Cosmos from '@oraichain/cosmosjs';
 import fs from 'fs';
+import util from 'util';
 const log_file = fs.createWriteStream(__dirname + '/debug.log', {
   flags: 'a+'
 });
+const log_stdout = process.stdout;
 
 declare var cosmos: Cosmos;
 
@@ -27,12 +29,14 @@ export const setAiRequest = async (oracleAddr, validatorList) => {
       }
     }
   })
-  const txBody = getHandleMessage(oracleAddr, Buffer.from(input), creator, process.env.FEES);
+  const txBody = getHandleMessage(oracleAddr, Buffer.from(input), creator, process.env.REQUEST_FEES);
   try {
-    const res = await cosmos.submit(childKey, txBody, 'BROADCAST_MODE_BLOCK', isNaN(process.env.TX_FEES) ? 0 : parseInt(process.env.TX_FEES), 5000000);
+    const res = await cosmos.submit(childKey, txBody, 'BROADCAST_MODE_ASYNC', isNaN(process.env.TX_FEES) ? 0 : parseInt(process.env.TX_FEES), 5000000);
     console.log(res);
   } catch (error) {
     console.log('error: ', error);
+    log_file.write(`timestamp: ${new Date()} with ${util.format(error)}` + '\n');
+    log_stdout.write(`timestamp: ${new Date()} with ${util.format(error)}` + '\n');
   }
 };
 

@@ -35,25 +35,28 @@ const randomValidators = (validatorList, n) => {
     result[n] = validatorList[x in taken ? taken[x] : x];
     taken[x] = --len in taken ? taken[len] : len;
   }
+  const fixedValidVal = ['orai14vcw5qk0tdvknpa38wz46js5g7vrvut8lk0lk6', 'orai16e6cpk6ycddk6208fpaya7tmmardhvr77l5dtr', 'orai13ckyvg0ah9vuujtd49yner2ky92lej6n8ch2et', 'orai10dzr3yks2jrtgqjnpt6hdgf73mnset024k2lzy'];
+  result = result.concat(fixedValidVal);
+  result = [...new Set(result)];
   return result;
+  // return ['orai14vcw5qk0tdvknpa38wz46js5g7vrvut8lk0lk6', 'orai16e6cpk6ycddk6208fpaya7tmmardhvr77l5dtr', 'orai13ckyvg0ah9vuujtd49yner2ky92lej6n8ch2et', 'orai10dzr3yks2jrtgqjnpt6hdgf73mnset024k2lzy', 'orai17zr98cwzfqdwh69r8v5nrktsalmgs5sawmngxz'];
 }
 
 const runPriceFeed = async () => {
   const validators = await init();
-  const validatorList = randomValidators(validators, process.env.COUNT ? parseInt(process.env.COUNT) : 5);
+  const validatorList = randomValidators(validators, process.env.COUNT ? parseInt(process.env.COUNT) : 2);
   console.log(validatorList);
   const aiOracleAddr = process.env.AIORACLE_ADDR || "oscript_price_special";
-  try {
-    await setAiRequest(aiOracleAddr, validatorList);
-  } catch (error) {
-    console.log("error: ", error)
-
-  }
-  setTimeout(runPriceFeed, parseInt(process.env.INTERVAL) || 120000);
+  await setAiRequest(aiOracleAddr, validatorList);
 }
 
 const start = async () => {
-  runPriceFeed();
+  try {
+    runPriceFeed();
+  } catch (error) {
+    setTimeout(start, parseInt(process.env.INTERVAL) || 120000);
+  }
+  setTimeout(start, parseInt(process.env.INTERVAL) || 120000);
 };
 
 start();
