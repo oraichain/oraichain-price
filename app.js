@@ -1,6 +1,6 @@
 import Cosmos from '@oraichain/cosmosjs';
 import { setAiRequest } from './utils';
-import https from 'https';
+import http from 'http';
 
 const init = async () => {
   global.cosmos = new Cosmos(process.env.LCD_URL, process.env.CHAIN_ID);
@@ -8,7 +8,7 @@ const init = async () => {
 
   const httpGet = url => {
     return new Promise((resolve, reject) => {
-      https.get(url, res => {
+      http.get(url, res => {
         let body = '';
         res.on('data', chunk => body += chunk);
         res.on('end', () => resolve(body));
@@ -16,7 +16,7 @@ const init = async () => {
     });
   };
 
-  const validators = await httpGet('https://lcd.orai.io/cosmos/staking/v1beta1/validators');
+  const validators = await httpGet(`${process.env.LCD_URL}/cosmos/staking/v1beta1/validators`);
   let validatorsActive = [];
   for (let val of JSON.parse(validators).validators) {
     if (!val.jailed && val.status === "BOND_STATUS_BONDED") validatorsActive.push(cosmos.getAddressStr(val.operator_address))
